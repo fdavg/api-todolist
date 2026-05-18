@@ -57,12 +57,35 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
                 .andExpect(jsonPath("$.statusHistory", hasSize(2)));
 
+        mockMvc.perform(patch("/api/tasks/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "status": "IN_PROGRESS"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$.statusHistory", hasSize(2)));
+
         mockMvc.perform(get("/api/tasks/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Create API"))
                 .andExpect(jsonPath("$.assignee").value("Alice"))
                 .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
                 .andExpect(jsonPath("$.statusHistory", hasSize(2)));
+    }
+
+    @Test
+    void shouldRejectTaskCreationWithoutTitle() throws Exception {
+        mockMvc.perform(post("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "description": "No title"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

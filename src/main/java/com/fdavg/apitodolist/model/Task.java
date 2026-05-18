@@ -64,6 +64,10 @@ public class Task {
     }
 
     public void updateStatus(TaskStatus status) {
+        if (this.status == status) {
+            return;
+        }
+
         this.status = status;
         this.updatedAt = Instant.now();
         this.statusHistory.add(new TaskStatusChange(status, this.updatedAt));
