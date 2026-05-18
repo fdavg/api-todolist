@@ -39,7 +39,13 @@ jobs:
 
           if [ -f package.json ]; then
             echo "Node.js project detected"
-            if [ -f package-lock.json ]; then
+            if [ -f pnpm-lock.yaml ]; then
+              corepack enable
+              pnpm install --frozen-lockfile
+            elif [ -f yarn.lock ]; then
+              corepack enable
+              yarn install --frozen-lockfile
+            elif [ -f package-lock.json ]; then
               npm ci
             else
               npm install
@@ -58,7 +64,8 @@ jobs:
             if command -v pytest >/dev/null 2>&1; then
               pytest
             else
-              echo "pytest not found, skipping tests"
+              echo "pytest not found for a Python project" >&2
+              exit 1
             fi
           elif [ -f go.mod ]; then
             echo "Go project detected"
