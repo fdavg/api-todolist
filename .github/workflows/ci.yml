@@ -39,7 +39,11 @@ jobs:
 
           if [ -f package.json ]; then
             echo "Node.js project detected"
-            npm ci
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
             npm run build --if-present
             npm test --if-present
           elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then
@@ -58,6 +62,7 @@ jobs:
             fi
           elif [ -f go.mod ]; then
             echo "Go project detected"
+            go build ./...
             go test ./...
           elif [ -f pom.xml ]; then
             echo "Maven project detected"
