@@ -1,0 +1,56 @@
+package com.fdavg.apitodolist.controller;
+
+import com.fdavg.apitodolist.dto.AssignTaskRequest;
+import com.fdavg.apitodolist.dto.CreateTaskRequest;
+import com.fdavg.apitodolist.dto.UpdateTaskStatusRequest;
+import com.fdavg.apitodolist.model.Task;
+import com.fdavg.apitodolist.service.TaskService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/tasks")
+public class TaskController {
+
+    private final TaskService taskService;
+
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Task create(@Valid @RequestBody CreateTaskRequest request) {
+        return taskService.create(request.title(), request.description());
+    }
+
+    @GetMapping
+    public List<Task> list() {
+        return taskService.list();
+    }
+
+    @GetMapping("/{id}")
+    public Task get(@PathVariable Long id) {
+        return taskService.get(id);
+    }
+
+    @PatchMapping("/{id}/assignee")
+    public Task assign(@PathVariable Long id, @Valid @RequestBody AssignTaskRequest request) {
+        return taskService.assign(id, request.assignee());
+    }
+
+    @PatchMapping("/{id}/status")
+    public Task updateStatus(@PathVariable Long id, @Valid @RequestBody UpdateTaskStatusRequest request) {
+        return taskService.updateStatus(id, request.status());
+    }
+}
